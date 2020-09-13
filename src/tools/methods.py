@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 
 # calculates hash
@@ -28,26 +29,24 @@ def compare_images(im_1, im_2):
     hash2 = calc_image_hash(im_2)
     lh = len(hash1)
     i = 0
-    result = "Equal"
+    result = "Yes"
     while i < lh:
         if hash1[i] != hash2[i]:
-            result = "Not equal"
+            result = "No"
             break
         else:
             i = i + 1
     return result
 
 
-def find_fragment(im_1, im_2):
-    method = cv2.TM_SQDIFF_NORMED
+def find_fragment(im_where, im_what):
+    where_find = cv2.imread(im_where)
+    what_find = cv2.imread(im_what)
 
-    fragment = cv2.imread(im_1)
-    image = cv2.imread(im_2)
-
-    result = cv2.matchTemplate(fragment, image, method)
-    print(result)
-
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-
-
-find_fragment("s.png", "full.png")
+    res = cv2.matchTemplate(where_find, what_find, cv2.TM_CCOEFF_NORMED)
+    threshold = .8
+    loc = np.where(res >= threshold)
+    result = "Yes"
+    if len(loc[0]) == 0 and len(loc[1]) == 0:
+        result = "No"
+    return result
