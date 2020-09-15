@@ -70,8 +70,8 @@ def find_icon_center_coordinates(path):
         loc = np.where(res >= threshold)
 
         # calculate coordinates of center
-        x_center = loc[1][0] + w / 2
-        y_center = loc[0][0] + h / 2
+        x_center = loc[1][0] + h / 2
+        y_center = loc[0][0] + w / 2
 
         icon_center_coordinates[icon_name] = [x_center, y_center]
 
