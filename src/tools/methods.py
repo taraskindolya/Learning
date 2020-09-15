@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
+import os
 
+from os import listdir
+from src.tools.variables import *
 
 # calculates hash
 def calc_image_hash(f_name):
@@ -50,3 +53,26 @@ def find_fragment(im_where, im_what):
     if len(loc[0]) == 0 and len(loc[1]) == 0:
         result = "No"
     return result
+
+
+def find_icon_center_coordinates(path):
+    icons = [file for file in listdir(path) if file.startswith(icon_prefix)]  # collect all icon names
+    icon_center_coordinates = {}
+    for icon in icons:
+        icon_name = os.path.splitext(icon)[0]
+
+        where_find = cv2.imread(path + im_full)
+        what_find = cv2.imread(path + icon)
+        w, h = what_find.shape[:2]  # get shape of icon
+
+        res = cv2.matchTemplate(where_find, what_find, cv2.TM_CCOEFF_NORMED)
+        threshold = .8
+        loc = np.where(res >= threshold)
+
+        # calculate coordinates of center
+        x_center = loc[1][0] + w / 2
+        y_center = loc[0][0] + h / 2
+
+        icon_center_coordinates[icon_name] = [x_center, y_center]
+
+    return icon_center_coordinates
